@@ -4,19 +4,16 @@ import com.replaceMe.propertyservice.webapi.exception.ResourceNotFoundException;
 import com.replaceMe.propertyservice.webapi.model.request.PropertyRequest;
 import com.replaceMe.propertyservice.webapi.model.response.PropertyResponse;
 import com.replaceMe.propertyservice.webapi.service.PropertyService;
-import com.replaceMe.propertyservice.webapi.service.impl.PropertyServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
-@RestController("/v1")
+@RestController
+@RequestMapping("/v1")
 public class PropertyController {
-    PropertyService propertyService;
-    PropertyController(PropertyServiceImpl propertyService){
-        this.propertyService = propertyService;
-    }
+    @Autowired
+    private PropertyService propertyService;
 
     @PostMapping("/property")
     public ResponseEntity<PropertyResponse> addProperty(@RequestBody PropertyRequest request) {
@@ -30,14 +27,6 @@ public class PropertyController {
 
         return ResponseEntity.ok(property); // HTTP 200 with the property data
     }
-
-//    @GetMapping("/property")
-//    public ResponseEntity<List<PropertyResponse>> getProperties(@ModelAttribute PropertyFilter filter) {
-//        List<PropertyEntity> propertyList = propertyService.getProperties(filter);
-//
-//        return ResponseEntity.ok(property.get()); // HTTP 200 with the property data
-//    }
-
     @PatchMapping("/property/{property_id}")
     public ResponseEntity<PropertyResponse> updateProperty(PropertyRequest request, @PathVariable String property_id) throws ResourceNotFoundException{
         PropertyResponse updatedProperty = propertyService.updateProperty(request, property_id);
@@ -49,5 +38,4 @@ public class PropertyController {
         PropertyResponse deletedProperty = propertyService.deleteProperty(property_id);
         return ResponseEntity.ok(deletedProperty);
     }
-
 }

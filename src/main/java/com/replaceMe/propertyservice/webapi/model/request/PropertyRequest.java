@@ -9,10 +9,10 @@ import java.time.LocalDate;
 @Setter
 public class PropertyRequest {
     private String location;
-    private double rent;
-    private double deposit;
-    private double setUpCost;
-    private LocalDate moveInDate;
+    private int rent;
+    private int deposit;
+    private int setUpCost;
+    private String moveInDate;
     private int numberOfBedrooms;
     private String gender;
     private String description;

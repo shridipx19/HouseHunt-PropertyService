@@ -4,7 +4,6 @@ import com.replaceMe.propertyservice.webapi.entity.PropertyEntity;
 import com.replaceMe.propertyservice.webapi.exception.ResourceNotFoundException;
 import com.replaceMe.propertyservice.webapi.exception.ValidationException;
 import com.replaceMe.propertyservice.webapi.mapper.PropertyMapper;
-import com.replaceMe.propertyservice.webapi.model.request.PropertyFilter;
 import com.replaceMe.propertyservice.webapi.model.request.PropertyRequest;
 import com.replaceMe.propertyservice.webapi.model.response.PropertyResponse;
 import com.replaceMe.propertyservice.webapi.repository.PropertyRepository;
@@ -16,9 +15,9 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -39,9 +38,9 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public PropertyResponse addProperty(PropertyRequest request) {
         validateRequest(request);
-        PropertyEntity propertyEntity = propertyMapper.toEntity(request);
+        PropertyEntity propertyEntity = PropertyMapper.toEntity(request);
         PropertyEntity savedEntity = propertyRepository.save(propertyEntity);
-        return propertyMapper.toDto(savedEntity);
+        return PropertyMapper.toDto(savedEntity);
     }
     @Override
     public PropertyResponse getProperty(String propertyId) throws ResourceNotFoundException {
@@ -49,20 +48,20 @@ public class PropertyServiceImpl implements PropertyService {
         if(propertyEntity.isEmpty()) {
             throw new ResourceNotFoundException(Constants.RESOURCE_NOT_FOUND);
         }
-        return propertyMapper.toDto(propertyEntity.get());
+        return PropertyMapper.toDto(propertyEntity.get());
     }
-    @Override
-    public List<PropertyResponse> getProperties(PropertyFilter filter) {
-        List<PropertyEntity> propertyEntityList = propertyRepository.findByFilters(filter);
-        return propertyEntityList.stream()
-                .map(propertyMapper::toDto).toList();
-    }
+//    @Override
+//    public List<PropertyResponse> getProperties(PropertyFilter filter) {
+//        List<PropertyEntity> propertyEntityList = propertyRepository.findByFilters(filter);
+//        return propertyEntityList.stream()
+//                .map(propertyMapper::toDto).toList();
+//    }
     @Override
     public PropertyResponse updateProperty(PropertyRequest request, String propertyId) throws ResourceNotFoundException {
         validateRequest(request);
-        PropertyEntity propertyEntity = propertyMapper.toEntity(request);
+        PropertyEntity propertyEntity = PropertyMapper.toEntity(request);
         PropertyEntity savedEntity = propertyRepository.save(propertyEntity);
-        return propertyMapper.toDto(savedEntity);
+        return PropertyMapper.toDto(savedEntity);
     }
 
     @Override
