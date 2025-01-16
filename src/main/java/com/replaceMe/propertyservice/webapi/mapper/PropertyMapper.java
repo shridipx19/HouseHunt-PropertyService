@@ -3,57 +3,62 @@ package com.replaceMe.propertyservice.webapi.mapper;
 import com.replaceMe.propertyservice.webapi.entity.PropertyEntity;
 import com.replaceMe.propertyservice.webapi.model.request.PropertyRequest;
 import com.replaceMe.propertyservice.webapi.model.response.PropertyResponse;
+import com.replaceMe.propertyservice.webapi.util.CoordinatesFetcher;
 import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
 public class PropertyMapper {
-     public static PropertyEntity toEntity(PropertyRequest request) {
-         if (request == null) return null;
-         PropertyEntity propertyEntity = new PropertyEntity();
-             propertyEntity.setMapsUrl("https://maps.app.goo.gl/GXR8NGbbA6Hn1nrQ6");
-             propertyEntity.setLocation(extractCoordinates("https://maps.app.goo.gl/GXR8NGbbA6Hn1nrQ6"));
-             propertyEntity.setRent(request.getRent());
-             propertyEntity.setDeposit(request.getDeposit());
-             propertyEntity.setSetupCost(request.getSetUpCost());
-             propertyEntity.setMoveInDate(request.getMoveInDate());
-             propertyEntity.setNumberOfBedrooms(request.getNumberOfBedrooms());
-             propertyEntity.setGender(request.getGender());
-             propertyEntity.setDescription(request.getDescription());
-             propertyEntity.setPostedBy(new ObjectId().toString());
-         return propertyEntity;
+    private final CoordinatesFetcher coordinatesFetcher;
 
-     }
-
-     // DTO to Entity
-     public static PropertyResponse toDto(PropertyEntity entity) {
-         if (entity == null) return null;
-
-         GeoJsonPoint location = new GeoJsonPoint(
-                 entity.getLocation().getX(),
-                 entity.getLocation().getY()
-         );
-         PropertyResponse response = new PropertyResponse();
-             response.setId(entity.getId());
-             response.setMapsUrl("https://maps.app.goo.gl/GXR8NGbbA6Hn1nrQ6");
-             response.setLocation(location);
-             response.setRent(entity.getRent());
-             response.setDeposit(entity.getDeposit());
-             response.setSetUpCost(entity.getSetupCost());
-             response.setMoveInDate(entity.getMoveInDate());
-             response.setNumberOfBedrooms(entity.getNumberOfBedrooms());
-             response.setGender(entity.getGender());
-             response.setDescription(entity.getDescription());
-             response.setPostedBy(entity.getPostedBy());
-         return response;
-     }
-    public static GeoJsonPoint extractCoordinates(String mapsUrl) {
-        // Example: Call Google Maps API to resolve short URL and get coordinates
-        // This is just a placeholder; actual implementation requires API integration.
-        double latitude = 40.782865; // Example latitude
-        double longitude = -73.965355; // Example longitude
-        return new GeoJsonPoint(longitude, latitude);
+    @Autowired
+    public PropertyMapper(CoordinatesFetcher coordinatesFetcher) {
+        this.coordinatesFetcher = coordinatesFetcher;
     }
 
+    public PropertyEntity toEntity(PropertyRequest request) throws IOException {
+        if (request == null) return null;
+        PropertyEntity propertyEntity = new PropertyEntity();
+        propertyEntity.setMapsUrl(request.getLocation());
+        propertyEntity.setLocation(getCoordinatesFromExpandedUrl(request.getLocation()));
+        propertyEntity.setRent(request.getRent());
+        propertyEntity.setDeposit(request.getDeposit());
+        propertyEntity.setSet_up_cost(request.getSetUp_cost());
+        propertyEntity.setMove_in_date(request.getMove_in_date());
+        propertyEntity.setNumberOfBedrooms(request.getNumberOfBedrooms());
+        propertyEntity.setGender(request.getGender());
+        propertyEntity.setDescription(request.getDescription());
+        propertyEntity.setPosted_by(new ObjectId().toString());
+        return propertyEntity;
+
+    }
+    public PropertyResponse toDto(PropertyEntity entity) {
+        if (entity == null) return null;
+
+        GeoJsonPoint location = new GeoJsonPoint(
+                entity.getLocation().getX(),
+                entity.getLocation().getY()
+        );
+        PropertyResponse response = new PropertyResponse();
+        response.set_id(entity.get_id().toString());
+        response.setMaps_url(entity.getMapsUrl());
+        response.setLocation(location);
+        response.setRent(entity.getRent());
+        response.setDeposit(entity.getDeposit());
+        response.setSetUp_cost(entity.getSet_up_cost());
+        response.setMove_in_date(entity.getMove_in_date());
+        response.setNumberOfBedrooms(entity.getNumberOfBedrooms());
+        response.setGender(entity.getGender());
+        response.setDescription(entity.getDescription());
+        response.setPosted_by(entity.getPosted_by());
+        return response;
+    }
+
+    private GeoJsonPoint getCoordinatesFromExpandedUrl(String shortenedLocationUrl) throws IOException {
+        return coordinatesFetcher.extractLocationCoordinates(coordinatesFetcher.expandShortenedUrl(shortenedLocationUrl));
+    }
 }

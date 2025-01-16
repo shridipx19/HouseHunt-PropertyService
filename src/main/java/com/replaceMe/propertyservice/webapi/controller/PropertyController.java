@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/v1")
 public class PropertyController {
@@ -16,7 +18,7 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @PostMapping("/property")
-    public ResponseEntity<PropertyResponse> addProperty(@RequestBody PropertyRequest request) {
+    public ResponseEntity<PropertyResponse> addProperty(@RequestBody PropertyRequest request) throws IOException {
         PropertyResponse response = propertyService.addProperty(request);
         return new ResponseEntity<PropertyResponse>(response, HttpStatus.CREATED); // HTTP 201 with created property
     }
@@ -28,7 +30,7 @@ public class PropertyController {
         return ResponseEntity.ok(property); // HTTP 200 with the property data
     }
     @PatchMapping("/property/{property_id}")
-    public ResponseEntity<PropertyResponse> updateProperty(PropertyRequest request, @PathVariable String property_id) throws ResourceNotFoundException{
+    public ResponseEntity<PropertyResponse> updateProperty(PropertyRequest request, @PathVariable String property_id) throws ResourceNotFoundException, IOException {
         PropertyResponse updatedProperty = propertyService.updateProperty(request, property_id);
         return ResponseEntity.ok(updatedProperty);
     }

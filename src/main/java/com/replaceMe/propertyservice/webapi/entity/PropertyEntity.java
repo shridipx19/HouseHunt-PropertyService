@@ -1,13 +1,15 @@
 package com.replaceMe.propertyservice.webapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
-import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -15,22 +17,22 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class PropertyEntity {
 
     @Id
-    private String id;
+    private String _id;
 
     @Field("maps_url")
     private String mapsUrl;
 
-    @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     private GeoJsonPoint location;
 
     private int rent;
     private int deposit;
 
     @Field("setUp_cost")
-    private int setupCost;
+    private int set_up_cost;
 
     @Field("move_in_date")
-    private String moveInDate;
+    @JsonFormat(pattern = "dd/MM/yyyy")  // Use Jackson's @JsonFormat for custom date format
+    private LocalDate move_in_date;
 
     @Field("numberOfBedrooms")
     private int numberOfBedrooms;
@@ -39,5 +41,5 @@ public class PropertyEntity {
     private String description;
 
     @Field("posted_by")
-    private String postedBy;
+    private String posted_by;
 }

@@ -14,54 +14,46 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class PropertyServiceImpl implements PropertyService {
 
-    @Autowired
-    PropertyMapper propertyMapper;
-
     private final PropertyRepository propertyRepository;
-    private final MongoTemplate mongoTemplate;
-
-    public PropertyServiceImpl(PropertyRepository propertyRepository, MongoTemplate mongoTemplate) {
+    private final PropertyMapper propertyMapper;
+    @Autowired
+    public PropertyServiceImpl(PropertyRepository propertyRepository,
+                               PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
-        this.mongoTemplate = mongoTemplate;
+        this.propertyMapper = propertyMapper;
     }
 
     @Override
-    public PropertyResponse addProperty(PropertyRequest request) {
+    public PropertyResponse addProperty(PropertyRequest request) throws IOException {
         validateRequest(request);
-        PropertyEntity propertyEntity = PropertyMapper.toEntity(request);
+        PropertyEntity propertyEntity = propertyMapper.toEntity(request);
         PropertyEntity savedEntity = propertyRepository.save(propertyEntity);
-        return PropertyMapper.toDto(savedEntity);
+        return propertyMapper.toDto(savedEntity);
     }
+
     @Override
     public PropertyResponse getProperty(String propertyId) throws ResourceNotFoundException {
         Optional<PropertyEntity> propertyEntity = propertyRepository.findById(propertyId);
         if(propertyEntity.isEmpty()) {
             throw new ResourceNotFoundException(Constants.RESOURCE_NOT_FOUND);
         }
-        return PropertyMapper.toDto(propertyEntity.get());
+        return propertyMapper.toDto(propertyEntity.get());
     }
-//    @Override
-//    public List<PropertyResponse> getProperties(PropertyFilter filter) {
-//        List<PropertyEntity> propertyEntityList = propertyRepository.findByFilters(filter);
-//        return propertyEntityList.stream()
-//                .map(propertyMapper::toDto).toList();
-//    }
     @Override
-    public PropertyResponse updateProperty(PropertyRequest request, String propertyId) throws ResourceNotFoundException {
+    public PropertyResponse updateProperty(PropertyRequest request, String propertyId) throws ResourceNotFoundException, IOException {
         validateRequest(request);
-        PropertyEntity propertyEntity = PropertyMapper.toEntity(request);
+        PropertyEntity propertyEntity = propertyMapper.toEntity(request);
         PropertyEntity savedEntity = propertyRepository.save(propertyEntity);
-        return PropertyMapper.toDto(savedEntity);
+        return propertyMapper.toDto(savedEntity);
     }
 
     @Override
