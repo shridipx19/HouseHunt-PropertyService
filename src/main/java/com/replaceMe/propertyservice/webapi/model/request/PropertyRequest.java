@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class PropertyRequest {
 
     @NotNull(message = "Location cannot be null")
-    private String location;
+    private String maps_url;
 
     @NotNull(message = "Rent cannot be null")
     @Min(value = 1000, message = "Rent must be at least 1000")

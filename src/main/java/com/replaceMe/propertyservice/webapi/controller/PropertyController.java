@@ -30,7 +30,7 @@ public class PropertyController {
         return ResponseEntity.ok(property); // HTTP 200 with the property data
     }
     @PatchMapping("/property/{property_id}")
-    public ResponseEntity<PropertyResponse> updateProperty(PropertyRequest request, @PathVariable String property_id) throws ResourceNotFoundException, IOException {
+    public ResponseEntity<PropertyResponse> updateProperty(@RequestBody PropertyRequest request, @PathVariable String property_id) throws ResourceNotFoundException, IOException {
         PropertyResponse updatedProperty = propertyService.updateProperty(request, property_id);
         return ResponseEntity.ok(updatedProperty);
     }
