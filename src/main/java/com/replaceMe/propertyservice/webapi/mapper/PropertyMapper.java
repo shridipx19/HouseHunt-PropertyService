@@ -23,8 +23,8 @@ public class PropertyMapper {
     public PropertyEntity toEntity(PropertyRequest request) throws IOException {
         if (request == null) return null;
         PropertyEntity propertyEntity = new PropertyEntity();
-        propertyEntity.setMapsUrl(request.getLocation());
-        propertyEntity.setLocation(getCoordinatesFromExpandedUrl(request.getLocation()));
+        propertyEntity.setMapsUrl(request.getMaps_url());
+        propertyEntity.setLocation(getCoordinatesFromExpandedUrl(request.getMaps_url()));
         propertyEntity.setRent(request.getRent());
         propertyEntity.setDeposit(request.getDeposit());
         propertyEntity.setSet_up_cost(request.getSetUp_cost());
@@ -60,5 +60,23 @@ public class PropertyMapper {
 
     private GeoJsonPoint getCoordinatesFromExpandedUrl(String shortenedLocationUrl) throws IOException {
         return coordinatesFetcher.extractLocationCoordinates(coordinatesFetcher.expandShortenedUrl(shortenedLocationUrl));
+    }
+
+    public void updateEntityFromRequest(PropertyRequest request, PropertyEntity entity) throws IOException {
+        if (request.getMaps_url() != null) {
+            entity.setMapsUrl(request.getMaps_url());
+            entity.setLocation(getCoordinatesFromExpandedUrl(request.getMaps_url()));
+        }
+        if (request.getMove_in_date() != null) {
+            entity.setMove_in_date(request.getMove_in_date());
+        }
+        entity.setRent(request.getRent());
+        entity.setDeposit(request.getDeposit());
+        entity.setSet_up_cost(request.getSetUp_cost());
+        entity.setNumberOfBedrooms(request.getNumberOfBedrooms());
+        entity.setGender(request.getGender());
+        entity.setDescription(request.getDescription());
+
+
     }
 }

@@ -51,8 +51,11 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public PropertyResponse updateProperty(PropertyRequest request, String propertyId) throws ResourceNotFoundException, IOException {
         validateRequest(request);
-        PropertyEntity propertyEntity = propertyMapper.toEntity(request);
-        PropertyEntity savedEntity = propertyRepository.save(propertyEntity);
+        PropertyEntity existingEntity = propertyRepository.findById(propertyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
+
+        propertyMapper.updateEntityFromRequest(request, existingEntity);
+        PropertyEntity savedEntity = propertyRepository.save(existingEntity);
         return propertyMapper.toDto(savedEntity);
     }
 
